@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<head>
+    <title>Wordsearch</title>
+    <link rel="stylesheet" href="styleSheet">
+</head>
+
+<body>
+    
+
+
+    <canvas width="500px" height="500px"></canvas>
+    <div class="crosswordOptions">
+        <textarea name="words" rows="20" cols="30"
+        maxlength="400" placeholder="Enter one word per line"></textarea>
+        <input name="Grid Size" type="number" value="5">
+        <div class="wordDirection">
+            <input name="up" type="checkbox">
+            <input name="down" type="checkbox">
+            <input name="forwards" type="checkbox">
+            <input name="backwards" type="checkbox">
+        </div>
+        <button type="button">Generate</button>
+    </div>
+    
+    <script src="javaScript"></script>
+</body>

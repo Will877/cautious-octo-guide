@@ -1,0 +1,45 @@
+const gridSize = 10;
+const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+const canvas = document.querySelector("canvas");
+ctx = canvas.getContext("2d");
+ctx.font = "24px Arial";
+
+let grid = [];
+
+for (let i = 0; i < gridSize; i++) {
+    grid[i] = [];
+    for (let j = 0; j < gridSize; j++) {
+        grid[i][j] = createLetter();
+    }
+}
+
+function createLetter() {
+    return {letter: characters.charAt(Math.floor(Math.random()*characters.length)),
+            partOfWord: false
+    }
+}
+
+
+console.log(grid);
+
+
+
+
+const start = 30;
+let x = start;
+let y = start;
+
+for(j=0;j<grid.length;j++){
+    for(i=0;i<grid[j].length;i++){
+        ctx.fillText(grid[j][i].letter,x,y);
+        x = x + 30;
+    }
+    x = start;
+    y = y + 30;
+}
+
+
+
+
+
