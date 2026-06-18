@@ -1,31 +1,78 @@
 const gridSize = 10;
 const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
-const canvas = document.querySelector("canvas");
-ctx = canvas.getContext("2d");
-ctx.font = "24px Arial";
-
 let grid = [];
 
+/*Generate matrix with random letters*/
 for (let i = 0; i < gridSize; i++) {
     grid[i] = [];
     for (let j = 0; j < gridSize; j++) {
-        grid[i][j] = createLetter();
+        grid[i][j] = {
+            letter: characters.charAt(Math.floor(Math.random()*characters.length)),
+            partOfWord: false
+        }
     }
 }
 
-function createLetter() {
-    return {letter: characters.charAt(Math.floor(Math.random()*characters.length)),
-            partOfWord: false
-    }
-}
+
 
 
 console.log(grid);
 
+addWord("HELLO");
+
+function addWord(word){
+    let xStart;
+    let yStart;
+    checkWord();
+
+    function generateWordStart(){
+        xStart = Math.floor(Math.random()*gridSize);
+        yStart = Math.floor(Math.random()*gridSize);
+    }
+
+    function checkWord(){
+        let wordOk = true;
+        generateWordStart();
+        let x = xStart;
+        let y = yStart;
+        for(i=0;i<word.length;i++){
+            if(x >= gridSize || grid[y][x].partOfWord == true){
+                wordOk = false;
+            }
+            x++;
+        }
+        if(wordOk == false){
+            checkWord();
+        } else {
+            makeWord();
+        }
+    }
 
 
+    function makeWord(){
+        let x = xStart;
+        let y = yStart;
+        for(i=0;i<word.length;i++){
+            grid[y][x].letter = word.charAt(i);
+            grid[y][x].partOfWord = true;
+            console.log(y,x);
+            x++;
+        }
+    }
+}
 
+
+/*
+switch(direction){
+    case 1:
+        
+}
+*/
+
+/*Paint the completed matrix on the canvas*/
+const canvas = document.querySelector("canvas");
+ctx = canvas.getContext("2d");
+ctx.font = "24px Arial";
 const start = 30;
 let x = start;
 let y = start;
