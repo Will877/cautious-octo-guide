@@ -14,32 +14,40 @@ for (let i = 0; i < gridSize; i++) {
 }
 
 
+let words = ["HELLO","GOODBYE","ATEST","ANOTHER"];
+
+words.forEach((value) => {
+    addWord(value,(Math.floor(Math.random()*8))+1)
+})
 
 
-console.log(grid);
 
-addWord("HELLO");
-
-function addWord(word){
+/*Adds words to wordsearch*/
+function addWord(word,direction){
     let xStart;
     let yStart;
+    console.log(direction);
     checkWord();
-
+    /*Generates start point in matrix for words*/
     function generateWordStart(){
         xStart = Math.floor(Math.random()*gridSize);
         yStart = Math.floor(Math.random()*gridSize);
     }
-
+    /*Checks that the words will fit in the grid and that space is not already occupied by a word.
+    If OK then sends the word to be added to the matrix*/
     function checkWord(){
         let wordOk = true;
         generateWordStart();
         let x = xStart;
         let y = yStart;
+        let newXY;
         for(i=0;i<word.length;i++){
-            if(x >= gridSize || grid[y][x].partOfWord == true){
+            if(x >= gridSize || x<0 || y >= gridSize || y<0 || grid[y][x].partOfWord == true){
                 wordOk = false;
             }
-            x++;
+            newXY = controlDirection(x,y,direction);
+            x = newXY.newX;
+            y = newXY.newY;
         }
         if(wordOk == false){
             checkWord();
@@ -47,43 +55,64 @@ function addWord(word){
             makeWord();
         }
     }
-
-
+    /*Adds the word to the grid*/
     function makeWord(){
         let x = xStart;
         let y = yStart;
+        let newXY;
         for(i=0;i<word.length;i++){
             grid[y][x].letter = word.charAt(i);
             grid[y][x].partOfWord = true;
-            console.log(y,x);
-            x++;
+            newXY = controlDirection(x,y,direction);
+            x = newXY.newX;
+            y = newXY.newY;
+        }
+    }
+    /*Adjusts x and y values according to the direction of the word*/
+    function controlDirection(x,y,direction){
+        switch(direction){
+            case 1:
+                return {newX:++x,newY:y};
+            case 2:
+                return {newX:++x,newY:--y};
+            case 3:
+                return {newX:x,newY:--y};
+            case 4:
+                return {newX:--x,newY:--y};
+            case 5:
+                return {newX:--x,newY:y};
+            case 6:
+                return {newX:--x,newY:++y};
+            case 7:
+                return {newX:x,newY:++y};
+            case 8:
+                return {newX:++x,newY:++y};              
         }
     }
 }
 
 
-/*
-switch(direction){
-    case 1:
-        
-}
-*/
+
 
 /*Paint the completed matrix on the canvas*/
 const canvas = document.querySelector("canvas");
 ctx = canvas.getContext("2d");
-ctx.font = "24px Arial";
-const start = 30;
+ctx.font = "60px Arial";
+const start = 50;
 let x = start;
 let y = start;
-
 for(j=0;j<grid.length;j++){
     for(i=0;i<grid[j].length;i++){
+        if(grid[j][i].partOfWord == true){
+            ctx.fillStyle = "red";
+        } else {
+            ctx.fillStyle = "black" 
+        }
         ctx.fillText(grid[j][i].letter,x,y);
-        x = x + 30;
+        x = x + 60;
     }
     x = start;
-    y = y + 30;
+    y = y + 60;
 }
 
 
