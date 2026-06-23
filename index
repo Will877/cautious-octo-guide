@@ -8,7 +8,7 @@
     
 
 
-    <canvas width="500px" height="500px"></canvas>
+    <canvas width="1000px" height="1000px"></canvas>
     <div class="crosswordOptions">
         <textarea name="words" rows="20" cols="30"
         maxlength="400" placeholder="Enter one word per line"></textarea>

@@ -8,104 +8,128 @@ for (let i = 0; i < gridSize; i++) {
     for (let j = 0; j < gridSize; j++) {
         grid[i][j] = {
             letter: characters.charAt(Math.floor(Math.random()*characters.length)),
-            partOfWord: false
+            partOfWord: false,
+            diagonal: false,
+            Wnumber: null
         }
     }
 }
 
 
 let words = ["HELLO","GOODBYE","ATEST","ANOTHER"];
-
+let wordNumber = 0;
 words.forEach((value) => {
-    addWord(value,[true,true,true,true,true,true,true,true])
+    addWord(value,[true,true,true,true,true,true,true,true],wordNumber);
+    wordNumber++;
 })
 
 
 
 /*Adds words to wordsearch*/
-function addWord(word,directions){
-    let wDirections = directions;
-    setDirection();
-    let checkWordCounter = 0;
+function addWord(word,directions,number){
+    setupWord();
     function setDirection(){
-        let array =  [];
-        wDirections.forEach((value,index) => {
+        let array = [];
+        directions.forEach((value,index) => {
             if(value == true){
                 array.push(index);
             }
         })
         return array[Math.floor(Math.random()*(array.length))];
     }
-    let xStart;
-    let yStart;
-    checkWord();
-    /*Generates start point in matrix for words*/
-    function generateWordStart(){
-        xStart = Math.floor(Math.random()*gridSize);
-        yStart = Math.floor(Math.random()*gridSize);
-    }
-    /*Checks that the words will fit in the grid and that space is not already occupied by a word.
-    If OK then sends the word to be added to the matrix*/
-    function checkWord(){
-        let wordOk = true;
-        generateWordStart();
-        let direction = setDirection();
-        let x = xStart;
-        let y = yStart;
-        let newXY;
-        let checkWordCounter = 0;
-        for(i=0;i<word.length;i++){
-            if(x >= gridSize || x<0 || y >= gridSize || y<0 || grid[y][x].partOfWord == true){
-                wordOk = false;
-            }
-            newXY = controlDirection(x,y,direction);
-            x = newXY.newX;
-            y = newXY.newY;
+    /*Calls function to check if the word will fit in the grid 50 times*/
+    function setupWord(){
+        let counter = 0;
+        while(!checkWord(Math.floor(Math.random()*gridSize),Math.floor(Math.random()*gridSize),setDirection()) && counter < 50){
+            counter++;
         }
-        if(wordOk == false){
-            checkWordCounter++;
-            if(checkWordCounter < 50){
-                checkWord();
+    }
+    /*Checks that the word will fit in the grid*/
+    function checkWord(xStart,yStart,direction){
+        let c = {x:xStart,y:yStart};
+        let workOk = true;
+        for(i=0;i<word.length;i++){
+            if(c.x >= gridSize || c.x<0 || c.y >= gridSize || c.y<0 || grid[c.y][c.x].partOfWord == true || ((i!=(word.length-1)) && diagonalCross(c.x,c.y,direction))){
+                workOk = false;
+                break;
             }
+            c = controlDirection(c.x,c.y,direction);
+        }
+        if(workOk){
+            makeWord(xStart,yStart,direction);
+            return true;
         } else {
-            makeWord(direction);
+            return false;
+        }
+    }
+    function diagonalCross(x,y,direction){
+        switch(direction){ 
+            default: return false;
+            case 1: 
+                if(x+1<gridSize && y-1>=0 && grid[y][x+1].partOfWord == true && grid[y-1][x].partOfWord == true && grid[y][x+1].Wnumber == grid[y-1][x].Wnumber){
+                    return true;
+                } else {
+                    return false;
+                }
+            case 3: 
+                if(x-1>=0 && y-1>=0 && grid[y][x-1].partOfWord == true && grid[y-1][x].partOfWord == true && grid[y][x-1].Wnumber == grid[y-1][x].Wnumber){
+                    return true;
+                } else {
+                    return false;
+                }    
+            case 5: 
+                if(x-1>=0 && y+1<gridSize && grid[y][x-1].partOfWord == true && grid[y+1][x].partOfWord == true && grid[y][x-1].Wnumber == grid[y+1][x].Wnumber){
+                    return true;
+                } else {
+                    return false;
+                }    
+            case 7: 
+                if(x+1<gridSize && y+1<gridSize && grid[y][x+1].partOfWord == true && grid[y+1][x].partOfWord == true && grid[y][x+1].Wnumber == grid[y+1][x].Wnumber){
+                    return true;
+                } else {
+                    return false;
+                }      
         }
     }
     /*Adds the word to the grid*/
-    function makeWord(direction){
-        let x = xStart;
-        let y = yStart;
-        let newXY;
+    function makeWord(xStart,yStart,direction){
+        let c = {x:xStart,y:yStart};
         for(i=0;i<word.length;i++){
-            grid[y][x].letter = word.charAt(i);
-            grid[y][x].partOfWord = true;
-            newXY = controlDirection(x,y,direction);
-            x = newXY.newX;
-            y = newXY.newY;
+            grid[c.y][c.x].letter = word.charAt(i);
+            grid[c.y][c.x].partOfWord = true;
+            grid[c.y][c.x].Wnumber = number;
+            if(direction == 1 || 3 || 5 || 7){
+                grid[c.y][c.x].diagonal = true;
+            }
+            c = controlDirection(c.x,c.y,direction);
         }
     }
     /*Adjusts x and y values according to the direction of the word*/
-    function controlDirection(x,y,direction){
+    function controlDirection(xO,yO,direction){
         switch(direction){
             case 0:
-                return {newX:++x,newY:y};
+                return {x:++xO,y:yO};
             case 1:
-                return {newX:++x,newY:--y};
+                return {x:++xO,y:--yO};
             case 2:
-                return {newX:x,newY:--y};
+                return {x:xO,y:--yO};
             case 3:
-                return {newX:--x,newY:--y};
+                return {x:--xO,y:--yO};
             case 4:
-                return {newX:--x,newY:y};
+                return {x:--xO,y:yO};
             case 5:
-                return {newX:--x,newY:++y};
+                return {x:--xO,y:++yO};
             case 6:
-                return {newX:x,newY:++y};
+                return {x:xO,y:++yO};
             case 7:
-                return {newX:++x,newY:++y};              
+                return {x:++xO,y:++yO};              
         }
     }
 }
+
+
+
+
 
 
 
