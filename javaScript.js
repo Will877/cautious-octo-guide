@@ -8,25 +8,24 @@ for (let i = 0; i < gridSize; i++) {
     for (let j = 0; j < gridSize; j++) {
         grid[i][j] = {
             letter: characters.charAt(Math.floor(Math.random()*characters.length)),
+            n: null,
             partOfWord: false,
-            Wnumber: null,
-            startOfWord: false,
-            endOfWord: false
+            s: false
         }
     }
 }
 
 let words = ["HELLO","GOODBYE","ATEST","ANOTHER"];
-let wordNumber = 0;
+let n = 0;
 words.forEach((value) => {
-    addWord(value,[true,true,true,true,true,true,true,true],wordNumber);
-    wordNumber++;
+    addWord(value,[true,true,true,true,true,true,true,true],n);
+    n++;
 })
 
 
 
 /*Adds words to wordsearch*/
-function addWord(word,directions,number){
+function addWord(word,directions,n){
     setupWord();
     function setDirection(){
         let array = [];
@@ -66,25 +65,25 @@ function addWord(word,directions,number){
         switch(direction){ 
             default: return false;
             case 1: 
-                if(x+1<gridSize && y-1>=0 && grid[y][x+1].partOfWord == true && grid[y-1][x].partOfWord == true && grid[y][x+1].Wnumber == grid[y-1][x].Wnumber){
+                if(x+1<gridSize && y-1>=0 && grid[y][x+1].partOfWord == true && grid[y-1][x].partOfWord == true && grid[y][x+1].n == grid[y-1][x].n){
                     return true;
                 } else {
                     return false;
                 }
             case 3: 
-                if(x-1>=0 && y-1>=0 && grid[y][x-1].partOfWord == true && grid[y-1][x].partOfWord == true && grid[y][x-1].Wnumber == grid[y-1][x].Wnumber){
+                if(x-1>=0 && y-1>=0 && grid[y][x-1].partOfWord == true && grid[y-1][x].partOfWord == true && grid[y][x-1].n == grid[y-1][x].n){
                     return true;
                 } else {
                     return false;
                 }    
             case 5: 
-                if(x-1>=0 && y+1<gridSize && grid[y][x-1].partOfWord == true && grid[y+1][x].partOfWord == true && grid[y][x-1].Wnumber == grid[y+1][x].Wnumber){
+                if(x-1>=0 && y+1<gridSize && grid[y][x-1].partOfWord == true && grid[y+1][x].partOfWord == true && grid[y][x-1].n == grid[y+1][x].n){
                     return true;
                 } else {
                     return false;
                 }    
             case 7: 
-                if(x+1<gridSize && y+1<gridSize && grid[y][x+1].partOfWord == true && grid[y+1][x].partOfWord == true && grid[y][x+1].Wnumber == grid[y+1][x].Wnumber){
+                if(x+1<gridSize && y+1<gridSize && grid[y][x+1].partOfWord == true && grid[y+1][x].partOfWord == true && grid[y][x+1].n == grid[y+1][x].n){
                     return true;
                 } else {
                     return false;
@@ -94,14 +93,14 @@ function addWord(word,directions,number){
     /*Adds the word to the grid*/
     function makeWord(xStart,yStart,direction){
         let c = {x:xStart,y:yStart};
-        grid[c.y][c.x].startOfWord = true
+        grid[c.y][c.x].s = true
         for(i=0;i<word.length;i++){
             if(i == word.length-1){
-                grid[c.y][c.x].endOfWord = true;
+                grid[c.y][c.x].s = true;
             }
             grid[c.y][c.x].letter = word.charAt(i);
             grid[c.y][c.x].partOfWord = true;
-            grid[c.y][c.x].Wnumber = number;
+            grid[c.y][c.x].n = n;
             c = controlDirection(c.x,c.y,direction);
         }
     }
@@ -129,54 +128,35 @@ function addWord(word,directions,number){
 }
 
 makeWordSearch(grid,words.length);
-function makeWordSearch(grid,numberOfWords){
+function makeWordSearch(grid,nOfWords){
     const canvas = document.querySelector("canvas");
-    let ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d");
     ctx.font = "60px Arial";
     const start = 50;
-    let x = start;
-    let y = start;
-    let drawWord = [];
-    for(i=0;i<numberOfWords;i++){
-        drawWord.push({
-            start: {x:0, y:0},
-            end: {x:0, y:0}
-        })
-    }
+    let c = {x:start,y:start};
+    let drawWord = [[],[],[],[]]
+    let letters = []
     for(j=0;j<grid.length;j++){
         for(i=0;i<grid[j].length;i++){
-            if(grid[j][i].startOfWord){
-                drawWord[grid[j][i].Wnumber].start = {x,y};
-            } else if(grid[j][i].endOfWord){
-                drawWord[grid[j][i].Wnumber].end = {x,y};
+            letters.push([grid[j][i].letter,c.x,c.y]);
+            if(grid[j][i].s){
+                drawWord[grid[j][i].n].push(c.x,c.y);
             }
-            x = x+ 60;
+            c.x = c.x+ 60;
         }
-        x = start;
-        y = y + 60;
-    }     
-    drawWord.forEach((value) => {
-        addColour(value.start.x,value.start.y,value.end.x,value.end.y);
-    })
-    x = start;
-    y = start;
-    ctx.fillStyle = "black";
-    for(j=0;j<grid.length;j++){
-        for(i=0;i<grid[j].length;i++){
-            ctx.fillText(grid[j][i].letter,x,y);
-            x = x + 60;
-        }
-        x = start;
-        y = y + 60;
+        c.x = start;
+        c.y = c.y + 60;
     }
+    drawWord.forEach((value) => {
+        addColour(value[0],value[1],value[2],value[3]);
+    })
+    letters.forEach((value) => {
+        ctx.fillText(value[0],value[1],value[2]);
+    })
     function addColour(xStart,yStart,xEnd,yEnd){
         ctx.beginPath();
-        ctx.arc(xStart+20, yStart-20, 30, 0, 2 * Math.PI);
-        ctx.arc(xEnd+20, yEnd-20, 30, 0, 2 * Math.PI);
-        ctx.fillStyle = "DeepSkyBlue";
-        ctx.fill();
-        ctx.beginPath();
         ctx.strokeStyle = "DeepSkyBlue";
+        ctx.lineCap = "round";
         ctx.moveTo(xStart+20, yStart-20);
         ctx.lineTo(xEnd+20, yEnd-20);
         ctx.lineWidth = 60;
