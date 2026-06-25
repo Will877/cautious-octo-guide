@@ -22,5 +22,5 @@
         <button type="button">Generate</button>
     </div>
     
-    <script src="javaScript"></script>
+    <script src="javaScript.js"></script>
 </body>

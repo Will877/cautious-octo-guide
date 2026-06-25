@@ -9,12 +9,12 @@ for (let i = 0; i < gridSize; i++) {
         grid[i][j] = {
             letter: characters.charAt(Math.floor(Math.random()*characters.length)),
             partOfWord: false,
-            diagonal: false,
-            Wnumber: null
+            Wnumber: null,
+            startOfWord: false,
+            endOfWord: false
         }
     }
 }
-
 
 let words = ["HELLO","GOODBYE","ATEST","ANOTHER"];
 let wordNumber = 0;
@@ -94,13 +94,14 @@ function addWord(word,directions,number){
     /*Adds the word to the grid*/
     function makeWord(xStart,yStart,direction){
         let c = {x:xStart,y:yStart};
+        grid[c.y][c.x].startOfWord = true
         for(i=0;i<word.length;i++){
+            if(i == word.length-1){
+                grid[c.y][c.x].endOfWord = true;
+            }
             grid[c.y][c.x].letter = word.charAt(i);
             grid[c.y][c.x].partOfWord = true;
             grid[c.y][c.x].Wnumber = number;
-            if(direction == 1 || 3 || 5 || 7){
-                grid[c.y][c.x].diagonal = true;
-            }
             c = controlDirection(c.x,c.y,direction);
         }
     }
@@ -127,33 +128,62 @@ function addWord(word,directions,number){
     }
 }
 
-
-
-
-
-
-
-
-/*Paint the completed matrix on the canvas*/
-const canvas = document.querySelector("canvas");
-ctx = canvas.getContext("2d");
-ctx.font = "60px Arial";
-const start = 50;
-let x = start;
-let y = start;
-for(j=0;j<grid.length;j++){
-    for(i=0;i<grid[j].length;i++){
-        if(grid[j][i].partOfWord == true){
-            ctx.fillStyle = "red";
-        } else {
-            ctx.fillStyle = "black" 
-        }
-        ctx.fillText(grid[j][i].letter,x,y);
-        x = x + 60;
+makeWordSearch(grid,words.length);
+function makeWordSearch(grid,numberOfWords){
+    const canvas = document.querySelector("canvas");
+    let ctx = canvas.getContext("2d");
+    ctx.font = "60px Arial";
+    const start = 50;
+    let x = start;
+    let y = start;
+    let drawWord = [];
+    for(i=0;i<numberOfWords;i++){
+        drawWord.push({
+            start: {x:0, y:0},
+            end: {x:0, y:0}
+        })
     }
+    for(j=0;j<grid.length;j++){
+        for(i=0;i<grid[j].length;i++){
+            if(grid[j][i].startOfWord){
+                drawWord[grid[j][i].Wnumber].start = {x,y};
+            } else if(grid[j][i].endOfWord){
+                drawWord[grid[j][i].Wnumber].end = {x,y};
+            }
+            x = x+ 60;
+        }
+        x = start;
+        y = y + 60;
+    }     
+    drawWord.forEach((value) => {
+        addColour(value.start.x,value.start.y,value.end.x,value.end.y);
+    })
     x = start;
-    y = y + 60;
+    y = start;
+    ctx.fillStyle = "black";
+    for(j=0;j<grid.length;j++){
+        for(i=0;i<grid[j].length;i++){
+            ctx.fillText(grid[j][i].letter,x,y);
+            x = x + 60;
+        }
+        x = start;
+        y = y + 60;
+    }
+    function addColour(xStart,yStart,xEnd,yEnd){
+        ctx.beginPath();
+        ctx.arc(xStart+20, yStart-20, 30, 0, 2 * Math.PI);
+        ctx.arc(xEnd+20, yEnd-20, 30, 0, 2 * Math.PI);
+        ctx.fillStyle = "DeepSkyBlue";
+        ctx.fill();
+        ctx.beginPath();
+        ctx.strokeStyle = "DeepSkyBlue";
+        ctx.moveTo(xStart+20, yStart-20);
+        ctx.lineTo(xEnd+20, yEnd-20);
+        ctx.lineWidth = 60;
+        ctx.stroke();
+    }
 }
+
 
 
 
