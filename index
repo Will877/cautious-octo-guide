@@ -3,24 +3,50 @@
     <title>Wordsearch</title>
     <link rel="stylesheet" href="styleSheet">
 </head>
-
 <body>
-    
-
-
-    <canvas width="1000px" height="1000px"></canvas>
-    <div class="crosswordOptions">
-        <textarea name="words" rows="20" cols="30"
-        maxlength="400" placeholder="Enter one word per line"></textarea>
-        <input name="Grid Size" type="number" value="5">
-        <div class="wordDirection">
-            <input name="up" type="checkbox">
-            <input name="down" type="checkbox">
-            <input name="forwards" type="checkbox">
-            <input name="backwards" type="checkbox">
+    <h1>Wordsearch Generator</h1>
+    <main>
+        <div class="options">
+            <form>
+                <label for="title">
+                    Title
+                </label>
+                <input  type="text"
+                        id="title"
+                        name="title"
+                        maxlength = "50">
+                <label for="words">
+                    Words
+                </label>        
+                <textarea   id="words"   
+                            name="words" 
+                            rows="10" 
+                            cols="30" 
+                            maxlength="400" 
+                            placeholder="e.g. cow&#10dog&#10horse"></textarea>
+                <label for="Grid Size">
+                    Grid Size 
+                </label> 
+                <input name="Grid Size" type="number" value="10">
+                <label for="wordDirection">
+                    Word Direction  
+                </label> 
+                <fieldset class="wordDirection" name="wordDirection">
+                    <input name="up" type="checkbox"><i class="arrow up"></i>
+                    <input name="diagonalUpRight" type="checkbox"><i class="arrow upright"></i>
+                    <input name="forwards" type="checkbox"><i class="arrow right"></i>
+                    <input name="diagonalDownLeft" type="checkbox"><i class="arrow downright"></i>
+                    <input name="down" type="checkbox"><i class="arrow down"></i>
+                    <input name="diagonalUpLeft" type="checkbox"><i class="arrow downleft"></i>
+                    <input name="backwards" type="checkbox"><i class="arrow left"></i>
+                    <input name="diagonalDownRight" type="checkbox"><i class="arrow upleft"></i>
+                </fieldset>
+                <button type="submit" name="submit">Generate</button>
+            </form>
         </div>
-        <button type="button">Generate</button>
-    </div>
-    
-    <script src="javaScript.js"></script>
+        <div class="wordsearch">
+            <canvas></canvas>
+        </div>
+        <script src="javaScript.js"></script>
+    </main>
 </body>

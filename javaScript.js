@@ -132,10 +132,14 @@ function addWord(word,directions,n){
 /*Draws the completed grid on the canvas*/
 function makeWordSearch(){
     const canvas = document.querySelector("canvas");
+    const canvasSize = canvas.getBoundingClientRect().width;
+    canvas.height = canvasSize;
+    canvas.width = canvasSize;
     const ctx = canvas.getContext("2d");
-    ctx.font = "60px Arial";
-    const start = 50;
-    let c = {x:start,y:start};
+    let font = getFont();
+    ctx.font = font.letter;
+    const s = {x:font.startX,y:font.startY};
+    let c = {x:s.x,y:s.y};
     let drawWord = [];
     let letters = []
     for(j=0;j<grid.length;j++){
@@ -148,25 +152,36 @@ function makeWordSearch(){
                     drawWord[grid[j][i].n].push(c.x,c.y);
                 }
             }
-            c.x += 60;
+            c.x += font.gap;
         }
-        c.x = start;
-        c.y += 60;
+        c.x = s.x;
+        c.y += font.gap;
     }
+    let counter = 0;
     drawWord.forEach((value) => {
-        addColour(value[0],value[1],value[2],value[3]);
+        addColour(value[0],value[1],value[2],value[3],counter++,font.size);
+        if(counter == 9){
+            counter = 0;
+        }
     })
     letters.forEach((value) => {
         ctx.fillText(value[0],value[1],value[2]);
     })
-    function addColour(xStart,yStart,xEnd,yEnd){
+    /*Highlights words which have been added to wordsearch*/
+    function addColour(xStart,yStart,xEnd,yEnd,counter,size){
+        const colours = ["aqua","yellow","fuchsia","DodgerBlue","red","GreenYellow","khaki","cyan","HotPink","gold"];
         ctx.beginPath();
-        ctx.strokeStyle = "DeepSkyBlue";
+        ctx.strokeStyle = colours[counter];
         ctx.lineCap = "round";
-        ctx.moveTo(xStart+20, yStart-20);
-        ctx.lineTo(xEnd+20, yEnd-20);
-        ctx.lineWidth = 60;
+        ctx.moveTo(xStart+(5/14)*size, yStart-(5/14)*size);
+        ctx.lineTo(xEnd+(5/14)*size, yEnd-(5/14)*size);
+        ctx.lineWidth = size;
         ctx.stroke();
+    }
+    function getFont(){
+        let size = canvasSize/grid.length;
+        let font = Math.floor(size).toString();
+        return {letter: font += "px Arial",gap: size,startX: (1/7)*size,startY:(6/7)*size,size:size};
     }
 }
 

@@ -1,3 +1,204 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+html {
+  --color: #4b4444;
+  --font-family: sans-serif;
+  --hover: #7a6f6f;
+  --checked: #1d0fdf;
+  --button: #5895d3;
+
+  color: var(--color);
+  font-family: var(--font-family);
+}
+h1{
+  font-size: 5em;
+  margin-top: 0.5em;
+  text-wrap: nowrap;
+  display: flex;
+  justify-content: center;
+  margin-bottom: -1em;
+}
 canvas{
-    border: 1px solid black;
+    border: 1px solid var(--color);
+    height:60vh;
+    width: 60vh;
+    
+}
+main{
+    display: grid;
+    min-height: 100vh;
+    grid-template-columns: 1fr 1fr;
+    max-width: 1200px;
+    margin: auto;
+}
+.options{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+form{
+  display: flex;
+  place-content: center;
+  flex-direction: column;
+  gap:1em;
+}
+.wordsearch{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+label{
+  font-weight: bold;
+}
+input:not([type="checkbox"]){
+  font-size: 1rem;
+  font-family: inherit;
+  border: none;
+  border: solid 1px var(--color);
+  padding: 0 0 .25rem;
+  border-radius: 0.2em;
+}
+input[type="number"]{
+  width:4em;
+}
+input[type="text"]{
+  width:50%;
+}
+input[type="checkbox"]{
+  appearance: none;
+  background-color: var(--background);
+  margin: 0;
+  width: 1.75em;
+  height: 1.75em;
+  border: 1px solid var(--color);
+  display: inline-grid;
+  place-content: center;
+  border-radius: 4px;
+}
+input[type="checkbox"]::before{
+  display: block;
+  content: '';
+  width: 1em;
+  height: 1em;
+  clip-path: polygon(14% 44%, 0% 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+input[type="checkbox"]:hover::before{
+  background: var(--hover);
+}
+input[type="checkbox"]:checked::before{
+  background: var(--checked);
+}
+textarea {
+  font-size: 1rem;
+  font-family: inherit;
+  border: none;
+  border: solid 1px var(--color);
+  padding: 0 0 .25rem;
+  resize: vertical;
+  width:50%;
+  border-radius: 0.2em;
+  max-height: 50vh;
+  min-height: 10vh;
+}
+button[type="submit"] {
+  border: none;
+  border-radius: 36px;
+  background: var(--button);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: .5rem 2rem;
+  width: 50%;
+  font-weight: bold;
+}
+.wordDirection{
+  display: flex;
+  flex-direction: row;
+  gap: 0.2em;
+}
+ .arrow {
+  background: var(--color);
+  display: inline-block;
+  width:1.75em;
+  height: 1.75em;
+  clip-path: polygon(40% 0%, 39% 34%, 100% 34%, 100% 67%, 41% 66%, 40% 100%, 0% 50%);
+ }
+
+.right {
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
+.left {
+  transform: rotate(135deg);
+  -webkit-transform: rotate(135deg);
+}
+.up {
+  transform: rotate(-135deg);
+  -webkit-transform: rotate(-135deg);
+}
+.down {
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+}
+.upright {
+  transform: rotate(-90deg);
+  -webkit-transform: rotate(-90deg);
+}
+.upleft {
+  transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+}
+.downright {
+  transform: rotate(0deg);
+  -webkit-transform: rotate(0deg);
+}
+.downleft {
+  transform: rotate(90deg);
+  -webkit-transform: rotate(90deg);
 }
