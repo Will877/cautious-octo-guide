@@ -83,7 +83,7 @@ main{
     align-items: center;
     flex-direction: column;
 }
-form{
+.inputs{
   display: flex;
   place-content: center;
   flex-direction: column;
@@ -147,7 +147,7 @@ textarea {
   max-height: 50vh;
   min-height: 10vh;
 }
-button[type="submit"] {
+button{
   border: none;
   border-radius: 36px;
   background: var(--button);
@@ -201,4 +201,21 @@ button[type="submit"] {
 .downleft {
   transform: rotate(90deg);
   -webkit-transform: rotate(90deg);
+}
+@media print {
+  .options, h1 {
+    display: none !important;
+  }
+  @page{
+    margin: 0mm;
+  }
+  canvas{
+    border: none;
+    height: 15cm;
+    width: 15cm;
+  }
+  main{
+    display: block;
+    margin: 2cm auto 2cm;
+  }
 }

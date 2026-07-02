@@ -1,9 +1,39 @@
 let grid = [];
-main();
+const button = document.querySelector("button");
+const gridInput = document.querySelector('input[type="number"]');
+button.addEventListener("click", getInputs);
+const directions = document.querySelectorAll('input[type="checkbox"]');
+const wordsbox = document.querySelector("textarea");
+const printButton = document.querySelector('button[name="print"]');
+printButton.addEventListener("click",makePrint);
+wordsbox.addEventListener("keydown", (e) => {
+    const regex = RegExp("[a-zA-z ]");
+
+    if(!regex.test(e.key) && e.key != 'backspace'){
+        e.preventDefault();
+    }
+})
+
+function makePrint(){
+    makeWordSearch(true);
+    window.print();
+}
+
+
+function getInputs(){
+    let gridSize = gridInput.value;
+    let directionArray = [];
+    grid = [];
+    directions.forEach((direction) => {
+        directionArray.push(direction.checked);
+    })
+    let words = wordsbox.value.replace(/[^a-zA-Z\n]/g,"").split("\n");
+    main(gridSize,directionArray,words);
+}
+
 
 /*Sets up the grid and calls functions for adding words and painting the grid on the canvas*/
-function main(){
-    const gridSize = 10;
+function main(gridSize,directionArray,words){
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     for (let i = 0; i < gridSize; i++) {
         grid[i] = [];
@@ -16,13 +46,12 @@ function main(){
             }
         }
     }
-    let words = ["HELLO","GOODBYE","ATEST","ANOTHER"];
     let n = 0;
     words.forEach((value) => {
-        addWord(value,[true,true,true,true,true,true,true,true],n);
+        addWord(value.toUpperCase(),directionArray,n);
         n++;
     })
-    makeWordSearch();
+    makeWordSearch(false);
 }
 
 /*Adds words to wordsearch*/
@@ -130,12 +159,13 @@ function addWord(word,directions,n){
 }
 
 /*Draws the completed grid on the canvas*/
-function makeWordSearch(){
+function makeWordSearch(print){
     const canvas = document.querySelector("canvas");
     const canvasSize = canvas.getBoundingClientRect().width;
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     canvas.height = canvasSize;
     canvas.width = canvasSize;
-    const ctx = canvas.getContext("2d");
     let font = getFont();
     ctx.font = font.letter;
     const s = {x:font.startX,y:font.startY};
@@ -158,12 +188,14 @@ function makeWordSearch(){
         c.y += font.gap;
     }
     let counter = 0;
-    drawWord.forEach((value) => {
-        addColour(value[0],value[1],value[2],value[3],counter++,font.size);
-        if(counter == 9){
-            counter = 0;
-        }
-    })
+    if(!print){
+        drawWord.forEach((value) => {
+            addColour(value[0],value[1],value[2],value[3],counter++,font.size);
+            if(counter == 9){
+                counter = 0;
+            }
+        })
+    }    
     letters.forEach((value) => {
         ctx.fillText(value[0],value[1],value[2]);
     })
@@ -181,7 +213,7 @@ function makeWordSearch(){
     function getFont(){
         let size = canvasSize/grid.length;
         let font = Math.floor(size).toString();
-        return {letter: font += "px Arial",gap: size,startX: (1/7)*size,startY:(6/7)*size,size:size};
+        return {letter: font += "px Courier",gap: size,startX: (1/7)*size,startY:(6/7)*size,size:size};
     }
 }
 

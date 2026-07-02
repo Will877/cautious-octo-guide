@@ -7,7 +7,7 @@
     <h1>Wordsearch Generator</h1>
     <main>
         <div class="options">
-            <form>
+            <div class="inputs">
                 <label for="title">
                     Title
                 </label>
@@ -41,8 +41,9 @@
                     <input name="backwards" type="checkbox"><i class="arrow left"></i>
                     <input name="diagonalDownRight" type="checkbox"><i class="arrow upleft"></i>
                 </fieldset>
-                <button type="submit" name="submit">Generate</button>
-            </form>
+                <button name="submit" onclick="getInputs">Generate</button>
+                <button name="print">Print</button>
+            </div>
         </div>
         <div class="wordsearch">
             <canvas></canvas>
