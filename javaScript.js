@@ -5,19 +5,39 @@ button.addEventListener("click", getInputs);
 const directions = document.querySelectorAll('input[type="checkbox"]');
 const wordsbox = document.querySelector("textarea");
 const printButton = document.querySelector('button[name="print"]');
+const title = document.querySelector("#title");
+const t = document.querySelector("main");
+const wordsearch = document.querySelector(".wordsearch");
+let printWords;
+let div;
 printButton.addEventListener("click",makePrint);
 wordsbox.addEventListener("keydown", (e) => {
     const regex = RegExp("[a-zA-z ]");
-
     if(!regex.test(e.key) && e.key != 'backspace'){
         e.preventDefault();
     }
 })
-
+let header;
 function makePrint(){
+    header = document.createElement("h2");
+    header.innerText = title.value;
+    t.insertBefore(header,wordsearch);
+    div = document.createElement("div");
+    t.appendChild(div);
+    div.classList.add("wordsPrint")
+    let words = document.createElement("p");
+    words.innerText = printWords;
+    console.log(printWords);
+    div.appendChild(words);
     makeWordSearch(true);
     window.print();
 }
+
+addEventListener("afterprint",() => {
+    header.remove();
+    makeWordSearch(false);
+    div.remove();
+})
 
 
 function getInputs(){
@@ -27,7 +47,9 @@ function getInputs(){
     directions.forEach((direction) => {
         directionArray.push(direction.checked);
     })
-    let words = wordsbox.value.replace(/[^a-zA-Z\n]/g,"").split("\n");
+    printWords = wordsbox.value.replace(/[^a-zA-Z\n]/g,"");
+    let words = printWords.split("\n");
+    console.log(words);
     main(gridSize,directionArray,words);
 }
 
@@ -95,25 +117,25 @@ function addWord(word,directions,n){
     function diagonalCross(x,y,direction){
         switch(direction){ 
             default: return false;
-            case 1: 
+            case 7: 
                 if(x+1<grid.length && y-1>=0 && grid[y][x+1].partOfWord == true && grid[y-1][x].partOfWord == true && grid[y][x+1].n == grid[y-1][x].n){
                     return true;
                 } else {
                     return false;
                 }
-            case 3: 
+            case 5: 
                 if(x-1>=0 && y-1>=0 && grid[y][x-1].partOfWord == true && grid[y-1][x].partOfWord == true && grid[y][x-1].n == grid[y-1][x].n){
                     return true;
                 } else {
                     return false;
                 }    
-            case 5: 
+            case 3: 
                 if(x-1>=0 && y+1<grid.length && grid[y][x-1].partOfWord == true && grid[y+1][x].partOfWord == true && grid[y][x-1].n == grid[y+1][x].n){
                     return true;
                 } else {
                     return false;
                 }    
-            case 7: 
+            case 1: 
                 if(x+1<grid.length && y+1<grid.length && grid[y][x+1].partOfWord == true && grid[y+1][x].partOfWord == true && grid[y][x+1].n == grid[y+1][x].n){
                     return true;
                 } else {
@@ -140,19 +162,19 @@ function addWord(word,directions,n){
         switch(direction){
             case 0:
                 return {x:++xO,y:yO};
-            case 1:
+            case 7:
                 return {x:++xO,y:--yO};
-            case 2:
+            case 6:
                 return {x:xO,y:--yO};
-            case 3:
+            case 5:
                 return {x:--xO,y:--yO};
             case 4:
                 return {x:--xO,y:yO};
-            case 5:
+            case 3:
                 return {x:--xO,y:++yO};
-            case 6:
+            case 2:
                 return {x:xO,y:++yO};
-            case 7:
+            case 1:
                 return {x:++xO,y:++yO};              
         }
     }
