@@ -4,7 +4,9 @@
     <link rel="stylesheet" href="styleSheet">
 </head>
 <body>
-    <h1>Wordsearch Generator</h1>
+    <header>
+        <h1>Wordsearch Generator</h1>
+    </header>
     <main>
         <div class="options">
             <div class="inputs">

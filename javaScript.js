@@ -47,8 +47,8 @@ function getInputs(){
     directions.forEach((direction) => {
         directionArray.push(direction.checked);
     })
-    printWords = wordsbox.value.replace(/[^a-zA-Z\n]/g,"");
-    let words = printWords.split("\n");
+    printWords = wordsbox.value.replace(/\w([ ]{2,})\w/g," ").replace(/[^a-zA-Z\n ]/g,"");
+    let words = printWords.replace(/ /g,"").split("\n");
     console.log(words);
     main(gridSize,directionArray,words);
 }
