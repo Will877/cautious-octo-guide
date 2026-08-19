@@ -47,7 +47,7 @@
                 <button name="print">Print</button>
             </div>
         </div>
-        <div class="wordsearch">
+        <div class="canvas">
             <canvas></canvas>
         </div>
         <script src="javaScript.js"></script>

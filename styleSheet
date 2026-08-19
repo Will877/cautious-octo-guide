@@ -94,7 +94,7 @@ main{
   flex-direction: column;
   gap:1em;
 }
-.wordsearch{
+.canvas{
   display: flex;
   justify-content: center;
   align-items: center;
