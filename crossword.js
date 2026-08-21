@@ -1,93 +1,75 @@
 let crosswordSize = 30;
 let crossword;
-let words;
 
 start();
 
 function start(){
-    words = ["rabbit", "goose", "hamster", "eagle", "bear", "elephant", "hedgehog","monkey","badger","dear","horse"];
-    let counter = 0;
-    while(counter<1000){
-        if(words.length == 0){
-            console.log(words);
-            addToCanvas();
-            break;
-        } else{
-            words = ["rabbit", "goose", "hamster", "eagle", "bear", "elephant", "hedgehog","monkey","badger","dear","horse"];
-            makeGrid();
-        }
+    let words = ["rabbit", "goose", "hamster", "eagle", "bear", "elephant", "hedgehog","monkey","badger","dear","horse"];
+    if(addWords(words)){
+        addToCanvas();
+    } else{
+        console.log("Cannot make crossword");
     }
-    counter++;
 }
-
-
-function makeGrid(){
-    crossword = [];
-    for (i = 0; i < crosswordSize; i++) {
-        crossword[i] = [];
-        for (j = 0; j < crosswordSize; j++) {
-            crossword[i][j] = null;
+function addWords(words){
+    for(k=0;k<100;k++){
+        if(addWordLoop(words)){
+            return true;
         }
+        console.log("Changing starting word");
     }
-    addWords();
-}
-
-
-
-/*Chooses a random word to add to the crossword and
-removes from the array if successfull*/
-function addWords(){
-    let counter = 0;
-    let wordNumber = 0;
-    while (counter < 1000 && words.length != 0) {
-        let random = Math.floor(Math.random() * (words.length - 1));
-        if (setWord((words[random]), wordNumber)) {
-            console.log(words[random]);
-            logCrossword();
-            words.splice(random, 1);
-        }
-        counter++;
-        wordNumber++;
-    }
-}    
-
-function logCrossword(){
-    let crosswordT = structuredClone(crossword);
-    for(i=0;i<crosswordT.length;i++){
-        for(j=0;j<crosswordT[i].length;j++){
-            if(crosswordT[i][j] == null){
-                crosswordT[i][j] = " ";
-            } else{
-                crosswordT[i][j] = crosswordT[i][j].letter;
+    return false;
+    function makeGrid(){
+        crossword = [];
+        for (i = 0; i < crosswordSize; i++) {
+            crossword[i] = [];
+            for (j = 0; j < crosswordSize; j++) {
+                crossword[i][j] = null;
             }
         }
-        console.log(crosswordT[i].join());
     }
-}
+    function addWordLoop(words){
+        let wordsCopy = structuredClone(words);
+        makeGrid();
+        let firstWord = true;
+        for(z=0;z<100;z++) {
+            let random = Math.floor(Math.random() * (wordsCopy.length - 1));
+            if (setWord((wordsCopy[random]), firstWord)) {
+                wordsCopy.splice(random, 1);
+                firstWord = false;
+            }
+            if(wordsCopy.length == 0){
+                return true;
+            }
+        }
+        return false;
+    }    
+}    
+
+
 
 
 
 
 
 function addToCanvas(){
-    let rowNull = true;
-    for(i=0;i<crossword.length;i++){
-        for(j=0;j<crossword[i].length;j++){
-            if(crossword[i][j] != null){
-                rowNull = false;
+    removeNullRows();
+    /*Removes rows that do not contain any letters from the start of the crossword*/
+    function removeNullRows(){
+        let rowNull = true;
+        for(i=0;i<crossword.length;i++){
+            for(j=0;j<crossword[i].length;j++){
+                if(crossword[i][j] != null){
+                    rowNull = false;
+                }
+            }
+            if(!rowNull){
+                makeCrossword(crossword.toSpliced(0,i));
+                break;
             }
         }
-        if(!rowNull){
-            let crossword1 = crossword.toSpliced(0,i);
-            console.log(crossword1)
-            makeCrossword(crossword1);
-            break;
-        }
-    }
-    
-
-
-    /*Draws the completed grid on the canvas*/
+    }    
+    /*Draws the completed crossword on the canvas*/
     function makeCrossword(grid){
         const canvas = document.querySelector("canvas");
         const canvasSize = canvas.getBoundingClientRect().width;
@@ -126,14 +108,9 @@ function addToCanvas(){
     }
 }
 
-
-
-
-
-
 /*Returns true and adds the word to the crossword if possible.
 Otherwise returns false*/
-function setWord(wordString, number) {
+function setWord(wordString, firstWord) {
     /*Class for letters in the crossword*/
     class crosswordLetter {
         constructor(letter, across, partOfMatch = false) {
@@ -146,7 +123,7 @@ function setWord(wordString, number) {
     const directions = [true, false];
     let across = directions[Math.floor(Math.random() * 2)];
     /*Add the first word at the beginning of the crossword*/
-    if (number == 0) {
+    if (firstWord) {
         addWord(10, 10, across, wordArray);
         return true;
     } else {
@@ -204,12 +181,13 @@ function setWord(wordString, number) {
                 return false;
             }
         }
+        /*Checks that there are no words running in parallel when placing a word in the matrix.*/
         function cannotMatchLetters(c,across){
             if(crossword[c.y][c.x]!=null && crossword[c.y][c.x].letter == wordArray[c.i]){
                 return false;
-            } else if(across == true && (crossword[c.y+1][c.x]!=null || crossword[c.y-1][c.x]!=null)){
+            } else if(across == true && ((typeof crossword[c.y+1]!="undefined" && crossword[c.y+1][c.x]!=null) || (typeof crossword[c.y-1]!="undefined" && crossword[c.y-1][c.x]!=null))){
                 return true;
-            } else if(across == false && (crossword[c.y][c.x+1]!=null || crossword[c.y][c.x-1]!=null)){
+            } else if(across == false && ((typeof crossword[c.y][c.x+1]!="undefined" && crossword[c.y][c.x+1]!=null) || (typeof crossword[c.y][c.x-1]!="undefined" && crossword[c.y][c.x-1]!=null))){
                 return true;
             } else{
                 return false;
@@ -255,6 +233,21 @@ function setWord(wordString, number) {
         }
     }
 }
+/*Testing function for logging the crossword to the console.
+function logCrossword(){
+    let crosswordT = structuredClone(crossword);
+    for(i=0;i<crosswordT.length;i++){
+        for(j=0;j<crosswordT[i].length;j++){
+            if(crosswordT[i][j] == null){
+                crosswordT[i][j] = " ";
+            } else{
+                crosswordT[i][j] = crosswordT[i][j].letter;
+            }
+        }
+        console.log(crosswordT[i].join());
+    }
+}
+    */
 
 
 
