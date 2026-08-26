@@ -1,12 +1,16 @@
-let crosswordSize = 30;
+let crosswordSize = 20;
 let crossword;
+const wordsbox = document.querySelector("textarea");
+const printButton = document.querySelector('button[name="print"]');
+const title = document.querySelector("#title");
+printButton.addEventListener("click",makePrint);
 
 start();
 
 function start(){
     let words = ["rabbit", "goose", "hamster", "eagle", "bear", "elephant", "hedgehog","monkey","badger","dear","horse"];
     if(addWords(words)){
-        addToCanvas();
+        addToCanvas(false);
     } else{
         console.log("Cannot make crossword");
     }
@@ -44,7 +48,30 @@ function addWords(words){
         }
         return false;
     }    
-}    
+}  
+
+let header;
+function makePrint(){
+    /*header = document.createElement("h2");
+    header.innerText = title.value;
+    header.innerText = "Test";
+    t.insertBefore(header,wordsearch);
+    div = document.createElement("div");
+    t.appendChild(div);
+    div.classList.add("wordsPrint")
+    let words = document.createElement("p");
+    words.innerText = printWords;
+    console.log(printWords);
+    div.appendChild(words);*/
+    addToCanvas(true);
+    window.print();
+}
+
+addEventListener("afterprint",() => {
+    header.remove();
+    addToCanvas(false);
+    div.remove();
+})
 
 
 
@@ -52,7 +79,7 @@ function addWords(words){
 
 
 
-function addToCanvas(){
+function addToCanvas(print){
     removeNullRows();
     /*Removes rows that do not contain any letters from the start of the crossword*/
     function removeNullRows(){
@@ -78,32 +105,59 @@ function addToCanvas(){
         canvas.height = canvasSize;
         canvas.width = canvasSize;
         let font = getFont();
-        ctx.font = font.letter;
-        const s = {x:font.startX,y:font.startY};
-        let c = {x:s.x,y:s.y};
-        let drawWord = [];
+        let c = {x:font.startX,y:font.startY};
         let letters = [];
+        let counter = 1;
+        console.log(grid.length);
         for(j=0;j<grid.length;j++){
-            for(i=0;i<grid[j].length;i++){
+            for(i=0;i<crosswordSize;i++){
                 if(grid[j][i] == null){
                     letters.push([" ",c.x,c.y]);
                 } else{
-                    letters.push([grid[j][i].letter,c.x,c.y]);
+                    if(grid[j][i].startOfWord == true){
+                        /*createClues(grid[j][i].word,grid[j][i].across,counter);*/
+                        letters.push([grid[j][i].letter,c.x,c.y,counter]);
+                        counter++;
+                    } else{
+                        letters.push([grid[j][i].letter,c.x,c.y]);
+                    }
                 }
                 c.x += font.gap;
             }
-            c.x = s.x;
+            c.x = font.startX;
             c.y += font.gap;
         }
     
         letters.forEach((value) => {
-            ctx.fillText(value[0],value[1],value[2]);
+            if(!print){
+                ctx.font = font.letter;
+                ctx.fillText(value[0],value[1],value[2]);
+            }
+            if(value[0]!=" "){
+                drawBox(value[1],value[2],font.size);
+            }
+            if(value[3]){
+                drawNumber(value[1],value[2],font.size,value[3]);
+            }
         })
-    
         function getFont(){
-            let size = canvasSize/30;
+            let size = canvasSize/crosswordSize;
             let font = Math.floor(size).toString();
             return {letter: font += "px Courier",gap: size,startX: (1/7)*size,startY:(6/7)*size,size:size};
+        }
+        function drawBox(x,y,size){
+            ctx.beginPath();
+            ctx.moveTo(x-(3/14)*size, y+(3/14)*size);
+            ctx.lineTo(x-(3/14)*size, y-(11/14)*size);
+            ctx.lineTo(x+(11/14)*size, y-(11/14)*size);
+            ctx.lineTo(x+(11/14)*size, y+(3/14)*size);
+            ctx.lineTo(x-(3/14)*size, y+(3/14)*size);
+            ctx.stroke();
+        }
+        function drawNumber(x,y,size,number){
+            let numberFont = Math.floor((1/2)*size).toString();
+            ctx.font = numberFont += "px Courier";
+            ctx.fillText(number,x-(3/14)*size,y-(7/14)*size);
         }
     }
 }
@@ -113,10 +167,12 @@ Otherwise returns false*/
 function setWord(wordString, firstWord) {
     /*Class for letters in the crossword*/
     class crosswordLetter {
-        constructor(letter, across, partOfMatch = false) {
+        constructor(letter, across, partOfMatch = false, startOfWord = false, word) {
             this.letter = letter;
             this.across = across;
             this.partOfMatch = partOfMatch;
+            this.startOfWord = startOfWord;
+            this.word = word;
         }
     }
     let wordArray = wordString.split("");
@@ -143,21 +199,34 @@ function setWord(wordString, firstWord) {
     function checkWord(startX, startY, across) { /*letterSpaceTaken or letterBeforeFirstLetter or letterAfterLastLetter or letterAlreadyMatched*/
         let c = { x: startX, y: startY, i: 0 };
             while (c.i < wordArray.length) {
-                if (outOfRange(c) || letterSpaceTaken(c) || letterBeforeFirstLetter(c,across) || letterAfterLastLetter(c,across) || cannotMatchLetters(c,across)) {
+                if (outOfRange(c) || startOfWord(c) || letterSpaceTaken(c) || letterBeforeFirstLetter(c,across) || letterAfterLastLetter(c,across) || cannotMatchLetters(c,across)) {
                     return false;
                 }
                 c = changeValues(c, across);
             }
         return true;
-        function outOfRange(c){
-            if(c.x>crossword.size || c.x<0 || c.y>crossword.size || c.y<0){
+        function startOfWord(c){
+            if(c.i == 0 && crossword[c.y][c.x]!=null && crossword[c.y][c.x].startOfWord == true){
                 return true;
             } else{
                 return false;
             }
         }
-        function letterSpaceTaken(c,across) {
-            return (crossword[c.y][c.x] != null && (crossword[c.y][c.x].letter != wordArray[c.i] || crossword[c.y][c.x].partOfMatch == true)) ? true : false;
+        function outOfRange(c){
+            if(c.x>=crosswordSize || c.x<0 || c.y>=crosswordSize || c.y<0){
+                return true;
+            } else{
+                return false;
+            }
+        }
+        function letterSpaceTaken(c) {
+            if(typeof crossword[c.y] != "undefined" && crossword[c.y][c.x] != null && (crossword[c.y][c.x].letter != wordArray[c.i] || crossword[c.y][c.x].partOfMatch == true)){
+                return true;
+            }
+            else{
+                return false;
+            }
+            /*return (crossword[c.y][c.x] != null && (crossword[c.y][c.x].letter != wordArray[c.i] || crossword[c.y][c.x].partOfMatch == true)) ? true : false;*/
         }
         function letterBeforeFirstLetter(c,across){
             if(c.i!=0 || (c.y == 0 && across == false) || (c.x == 0 && across == true)){
@@ -173,9 +242,9 @@ function setWord(wordString, firstWord) {
         function letterAfterLastLetter(c,across){
             if(c.i!=wordArray.length-1){
                 return false;
-            } else if(across == true && crossword[c.y][c.x+1]!=null){
+            } else if(across == true && typeof crossword[c.y][c.x+1]!="undefined" && crossword[c.y][c.x+1]!=null){
                 return true;
-            } else if(across == false && crossword[c.y+1][c.x]!=null){
+            } else if(across == false && typeof crossword[c.y+1]!="undefined" && crossword[c.y+1][c.x]!=null){
                 return true;
             } else{
                 return false;
@@ -200,8 +269,13 @@ function setWord(wordString, firstWord) {
         while (c.i < wordArray.length) {
             if (crossword[c.y][c.x] != null && crossword[c.y][c.x].letter == wordArray[c.i]) {
                 crossword[c.y][c.x].partOfMatch = true;
+            } else{
+                crossword[c.y][c.x] = new crosswordLetter(wordArray[c.i], across);
             }
-            crossword[c.y][c.x] = new crosswordLetter(wordArray[c.i], across);
+            if(c.i == 0){
+                crossword[c.y][c.x].startOfWord = true;
+                crossword[c.y][c.x].word = wordString;
+            }
             c = changeValues(c, across);
         }
     }

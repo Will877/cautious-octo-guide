@@ -5,9 +5,32 @@
         <link rel="styleSheet" href="styleSheet">
     </head>
     <body>
-        <h1>Crossword Generator</h1>
+        <header>
+            <h1>Crossword Generator</h1>
+        </header>
         <main>
-            <div class="options"></div>
+            <div class="options">
+                <div class="inputs">
+                    <label for="title">
+                        Title
+                    </label>
+                    <input  type="text"
+                            id="title"
+                            name="title"
+                            maxlength = "50">
+                    <label for="words">
+                        Words
+                    </label>        
+                    <textarea   id="words"   
+                                name="words" 
+                                rows="10" 
+                                cols="30" 
+                                maxlength="400" 
+                                placeholder="e.g. cow&#10dog&#10horse"></textarea>
+                <button name="submit" onclick="getInputs">Generate</button>
+                <button name="print">Print</button>                
+                </div>
+            </div>   
             <div class="canvas">
                 <canvas></canvas>
             </div>
