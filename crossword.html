@@ -3,6 +3,7 @@
     <head>
         <title>Crossword</title>
         <link rel="styleSheet" href="styleSheet">
+        <link rel="styleSheet" href="crossword.css">
     </head>
     <body>
         <header>
@@ -17,7 +18,8 @@
                     <input  type="text"
                             id="title"
                             name="title"
-                            maxlength = "50">
+                            maxlength = "50"
+                            placeholder="Enter a title...">
                     <label for="words">
                         Words
                     </label>        
@@ -27,7 +29,7 @@
                                 cols="30" 
                                 maxlength="400" 
                                 placeholder="e.g. cow&#10dog&#10horse"></textarea>
-                <button name="submit" onclick="getInputs">Generate</button>
+                <button name="submit">Generate</button>
                 <button name="print">Print</button>                
                 </div>
             </div>   

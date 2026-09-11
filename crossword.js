@@ -1,14 +1,51 @@
 let crosswordSize = 20;
 let crossword;
+let clues = [];
+let words = [];
+let descriptions = [];
 const wordsbox = document.querySelector("textarea");
 const printButton = document.querySelector('button[name="print"]');
 const title = document.querySelector("#title");
 printButton.addEventListener("click",makePrint);
+const t = document.querySelector("main");
+const canvas = document.querySelector("canvas");
+const crosswordH = document.querySelector(".canvas");
+const text = document.querySelector("textarea");
+const generate = document.querySelector('button[name="submit"]');
+generate.addEventListener("click",start);
+
+text.addEventListener("keydown", (e) => {
+    const regex = RegExp("[a-zA-z ]");
+    if(!regex.test(e.key) && e.key != 'backspace'){
+        e.preventDefault();
+    }
+})
+
 
 start();
 
 function start(){
-    let words = ["rabbit", "goose", "hamster", "eagle", "bear", "elephant", "hedgehog","monkey","badger","dear","horse"];
+    clues = [];
+    words = [];
+    let wordClues = text.value.replace(/\w([ ]{2,})\w/g," ").replace(/[^a-zA-Z\n ]/g,"").split("\n");
+    wordClues.forEach((wordClue) => {
+        words.push(wordClue.substring(0,wordClue.indexOf(" ")));
+        descriptions.push(wordClue.substring(wordClue.indexOf(" ") + 1));
+    })
+    console.log(words,descriptions);
+    /*words = ["rabbit", "goose", "hamster", "eagle", "bear", "elephant", "hedgehog","monkey","badger","dear","horse"];
+    descriptions = ["Has long ears and lives in a burrow",
+        "A white bird sometimes seen on farms",
+        "Small mammal often kept as a pet",
+        "A big bird which is top of the food chain",
+        "Bown and polar are types of this",
+        "A big animal with a trunk",
+        "A small mammal with many spikes",
+        "An intellignet animal which lives in trees",
+        "A black and white animal which lives in a burrow",
+        "A brown mammal which can jump high",
+        "A animal which you can ride"
+    ];*/
     if(addWords(words)){
         addToCanvas(false);
     } else{
@@ -51,18 +88,34 @@ function addWords(words){
 }  
 
 let header;
+let div;
+
 function makePrint(){
-    /*header = document.createElement("h2");
+    let acrossWords = "";
+    let downWords = "";
+    header = document.createElement("h2");
     header.innerText = title.value;
     header.innerText = "Test";
-    t.insertBefore(header,wordsearch);
+    t.insertBefore(header,crosswordH);
     div = document.createElement("div");
     t.appendChild(div);
-    div.classList.add("wordsPrint")
-    let words = document.createElement("p");
-    words.innerText = printWords;
-    console.log(printWords);
-    div.appendChild(words);*/
+    div.classList.add("wordsPrint");
+    let hAcross = document.createElement("h3");
+    hAcross.innerText = "Across";
+    let pAcross = document.createElement("p");
+    let hDown = document.createElement("h3");
+    hDown.innerText = "Down";
+    let pDown = document.createElement("p");
+    clues.forEach((clue) => {
+        if(clue.across){
+            acrossWords += (clue.number.toString() + ". " + clue.description + "\n");
+        } else{
+            downWords += (clue.number.toString() + ". " + clue.description + "\n");
+        }
+    })
+    pAcross.innerText = acrossWords;
+    pDown.innerText = downWords;
+    div.append(hAcross,pAcross,hDown,pDown);
     addToCanvas(true);
     window.print();
 }
@@ -71,6 +124,8 @@ addEventListener("afterprint",() => {
     header.remove();
     addToCanvas(false);
     div.remove();
+    printWords="";
+    div.innerText = "";
 })
 
 
@@ -98,7 +153,14 @@ function addToCanvas(print){
     }    
     /*Draws the completed crossword on the canvas*/
     function makeCrossword(grid){
-        const canvas = document.querySelector("canvas");
+        clues = [];
+        class clue{
+            constructor(number,across,description){
+                this.number = number;
+                this.across = across;
+                this.description = description;
+            }
+        }
         const canvasSize = canvas.getBoundingClientRect().width;
         const ctx = canvas.getContext("2d");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -115,7 +177,7 @@ function addToCanvas(print){
                     letters.push([" ",c.x,c.y]);
                 } else{
                     if(grid[j][i].startOfWord == true){
-                        /*createClues(grid[j][i].word,grid[j][i].across,counter);*/
+                        clues.push(new clue(counter,grid[j][i].across,descriptions[words.indexOf(grid[j][i].word)]));
                         letters.push([grid[j][i].letter,c.x,c.y,counter]);
                         counter++;
                     } else{
@@ -127,6 +189,7 @@ function addToCanvas(print){
             c.x = font.startX;
             c.y += font.gap;
         }
+        console.log(clues);
     
         letters.forEach((value) => {
             if(!print){
@@ -161,6 +224,8 @@ function addToCanvas(print){
         }
     }
 }
+
+
 
 /*Returns true and adds the word to the crossword if possible.
 Otherwise returns false*/
