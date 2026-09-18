@@ -13,6 +13,7 @@ const crosswordH = document.querySelector(".canvas");
 const text = document.querySelector("textarea");
 const generate = document.querySelector('button[name="submit"]');
 generate.addEventListener("click",start);
+const crosswordTitle = document.querySelector("input");
 
 text.addEventListener("keydown", (e) => {
     const regex = RegExp("[a-zA-z ]");
@@ -25,27 +26,14 @@ text.addEventListener("keydown", (e) => {
 start();
 
 function start(){
+    descriptions = [];
     clues = [];
     words = [];
     let wordClues = text.value.replace(/\w([ ]{2,})\w/g," ").replace(/[^a-zA-Z\n ]/g,"").split("\n");
     wordClues.forEach((wordClue) => {
         words.push(wordClue.substring(0,wordClue.indexOf(" ")));
         descriptions.push(wordClue.substring(wordClue.indexOf(" ") + 1));
-    })
-    console.log(words,descriptions);
-    /*words = ["rabbit", "goose", "hamster", "eagle", "bear", "elephant", "hedgehog","monkey","badger","dear","horse"];
-    descriptions = ["Has long ears and lives in a burrow",
-        "A white bird sometimes seen on farms",
-        "Small mammal often kept as a pet",
-        "A big bird which is top of the food chain",
-        "Bown and polar are types of this",
-        "A big animal with a trunk",
-        "A small mammal with many spikes",
-        "An intellignet animal which lives in trees",
-        "A black and white animal which lives in a burrow",
-        "A brown mammal which can jump high",
-        "A animal which you can ride"
-    ];*/
+    });
     if(addWords(words)){
         addToCanvas(false);
     } else{
@@ -95,7 +83,7 @@ function makePrint(){
     let downWords = "";
     header = document.createElement("h2");
     header.innerText = title.value;
-    header.innerText = "Test";
+    header.innerText = crosswordTitle.value;
     t.insertBefore(header,crosswordH);
     div = document.createElement("div");
     t.appendChild(div);
@@ -170,7 +158,6 @@ function addToCanvas(print){
         let c = {x:font.startX,y:font.startY};
         let letters = [];
         let counter = 1;
-        console.log(grid.length);
         for(j=0;j<grid.length;j++){
             for(i=0;i<crosswordSize;i++){
                 if(grid[j][i] == null){
@@ -189,7 +176,6 @@ function addToCanvas(print){
             c.x = font.startX;
             c.y += font.gap;
         }
-        console.log(clues);
     
         letters.forEach((value) => {
             if(!print){

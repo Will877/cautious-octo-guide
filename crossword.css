@@ -1,0 +1,29 @@
+ h3 {
+    font-size: 0.75cm;
+    text-decoration: underline;
+  }
+
+@media print {
+
+main{
+    text-wrap: nowrap;
+}    
+.wordsPrint{
+  /*column-count: 1;
+  max-height: 14cm;
+  column-gap: 0cm;
+  margin-left: 2.2cm;
+  margin-top: 0cm;*/
+  column-count: 2;
+  margin: 0 2.2cm;
+}
+ p{
+    font-size: 10pt;
+    text-align: left;
+    line-height: 0.5cm;
+  }
+  h3 {
+    font-size: 0.75cm;
+  }
+
+}    

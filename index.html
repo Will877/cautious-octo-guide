@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <head>
     <title>Wordsearch</title>
-    <link rel="stylesheet" href="styleSheet">
+    <link rel="stylesheet" href="wordsearch.css">
 </head>
 <body>
     <header>
         <h1>Wordsearch Generator</h1>
+        <a href="crossword.html">crossword</a>
     </header>
     <main>
         <div class="options">
@@ -14,6 +15,7 @@
                     Title
                 </label>
                 <input  type="text"
+                        placeholder="Enter a title..."
                         id="title"
                         name="title"
                         maxlength = "50">
@@ -50,6 +52,6 @@
         <div class="canvas">
             <canvas></canvas>
         </div>
-        <script src="javaScript.js"></script>
+        <script src="wordsearch.js"></script>
     </main>
 </body>
